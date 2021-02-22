@@ -23,6 +23,10 @@ class GameViewController: UIViewController {
     func setupView() {
         sceneView = (view as! SCNView)
         
+        sceneView.showsStatistics = true
+        sceneView.allowsCameraControl = true
+        sceneView.autoenablesDefaultLighting = true
+        
         setupScene()
     }
     
@@ -36,16 +40,33 @@ class GameViewController: UIViewController {
     func setupCamera() {
         cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 5)
+        cameraNode.position = SCNVector3(0, 0, 5)
         scene.rootNode.addChildNode(cameraNode)
         
         addSquare()
+//        addSphere()
     }
     
     func addSquare() {
         let geometry = SCNBox(width: 1, height: 1, length: 1, chamferRadius: 0.0)
-        let squareNode = SCNNode(geometry: geometry)
-        scene.rootNode.addChildNode(squareNode)
+        let node = SCNNode(geometry: geometry)
+        node.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
+        scene.rootNode.addChildNode(node)
+        
+        let force = SCNVector3(0, 10, 0)
+        let forcePos = SCNVector3(0.05, 0.05, 0.05)
+//        node.physicsBody?.applyForce(force, asImpulse: true)
+        node.physicsBody?.applyForce(force, at:forcePos, asImpulse: true)
+        
+        let torqueForce = SCNVector4(0, 0, 1, 1)
+        node.physicsBody?.applyTorque(torqueForce, asImpulse: true)
+    }
+    
+    func addSphere() {
+        let geometry = SCNSphere(radius: 1.0)
+        let node = SCNNode(geometry: geometry)
+        scene.rootNode.addChildNode(node)
+        node.position = SCNVector3(0, 1, 0)
     }
 
 }
